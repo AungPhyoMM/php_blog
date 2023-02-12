@@ -13,7 +13,7 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AdminLTE 3 | Widgets</title>
+    <title>Blog | Page</title>
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -37,7 +37,22 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
                 </div><!-- /.container-fluid -->
             </section>
             <?php
+            if (!empty($_GET['pageno'])) {
+                $pageno = $_GET['pageno'];
+            } else {
+                $pageno = 1;
+            };
+
+            $numOfrecs = 6;
+
+            $offset = ($pageno - 1) * $numOfrecs;
+
             $stmt = $pdo->prepare("SELECT * FROM posts ORDER BY id DESC");
+            $stmt->execute();
+            $rawResult = $stmt->fetchAll();
+            $total_pages = ceil(count($rawResult) / $numOfrecs);
+
+            $stmt = $pdo->prepare("SELECT * FROM posts ORDER BY id DESC LIMIT $offset, $numOfrecs");
             $stmt->execute();
             $result = $stmt->fetchAll();
             ?>
@@ -70,7 +85,37 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
                         }
                     } ?>
                 </div>
-                <!-- /.row -->
+                <div style="float:right;margin-right: 0px;">
+                    <nav arial-label="Page navigatin example">
+                        <ul class="pagination">
+                            <li class="page-item">
+                                <a href="?pageno=1" class="page-link">First</a>
+                            </li>
+                            <li class="page-item <?php if ($pageno <= 1) {
+                                                        echo 'disabled';
+                                                    } ?>">
+                                <a href="?pageno=<?php if ($pageno <= 1) {
+                                                        echo '#';
+                                                    } else {
+                                                        echo ($pageno - 1);
+                                                    } ?>" class="page-link">Previous</a>
+                            </li>
+                            <li class="page-item"><a href="#" class="page-link"><?= $pageno ?></a></li>
+                            <li class="page-item <?php if ($pageno >= $total_pages) {
+                                                        echo 'disabled';
+                                                    } ?>">
+                                <a href="?pageno=<?php if ($pageno >= $total_pages) {
+                                                        echo '#';
+                                                    } else {
+                                                        echo ($pageno + 1);
+                                                    }; ?>" class="page-link">Next</a>
+                            </li>
+                            <li class="page-item">
+                                <a href="?pageno=<?= $total_pages ?>" class="page-link">Last</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div><br><br>
             </section>
 
             <a id="back-to-top" href="#" class="btn btn-primary back-to-top" role="button" aria-label="Scroll to top">

@@ -16,11 +16,16 @@ $stmtcmt = $pdo->prepare("SELECT * FROM comments WHERE post_id=" . $blogId);
 $stmtcmt->execute();
 $cmResult = $stmtcmt->fetchAll();
 
-$authorId = $cmResult[0]['author_id'];
+$auResult = [];
 
-$stmtau = $pdo->prepare("SELECT * FROM users WHERE id=" . $authorId);
-$stmtau->execute();
-$auResult = $stmtau->fetchAll();
+if ($cmResult) {
+    foreach ($cmResult as $key => $value) {
+        $authorId = $cmResult[$key]['author_id'];
+        $stmtau = $pdo->prepare("SELECT * FROM users WHERE id=" . $authorId);
+        $stmtau->execute();
+        $auResult[] = $stmtau->fetchAll();
+    }
+}
 
 if ($_POST) {
     $comment = $_POST['comment'];
@@ -39,7 +44,7 @@ if ($_POST) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AdminLTE 3 | Widgets</title>
+    <title>Blog | Details</title>
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -81,26 +86,22 @@ if ($_POST) {
 
                             </div>
                             <!-- /.card-body -->
-                            <?php
-                            if ($cmResult) {
-                                for ($i = 0; $i < count($cmResult); $i++) {
-                            ?>
-                                    <div class="card-footer card-comments">
-                                        <div class="card-comment">
-                                            <div class="comment-text" style="margin-left: 0px !important">
-                                                <span class="username">
-                                                    <?= $auResult[0]['name'] ?>
-                                                    <span class="text-muted float-right"><?= $cmResult[$i]['created_at'] ?></span>
-                                                </span><!-- /.username -->
-                                                <?= $cmResult[$i]['content'] ?>
-                                            </div>
-                                            <!-- /.comment-text -->
-                                        </div>
-                                        <!-- /.card-comment -->
+                            <div class="card-footer card-comments">
+                                <div class="card-comment">
+                                    <div class="comment-text" style="margin-left: 0px !important">
+                                        <?php foreach ($cmResult as $key => $value) { ?>
+                                            <span class="username">
+                                                <?= $auResult[$key][0]['name'] ?>
+                                                <span class="text-muted float-right"><?= $value['created_at'] ?></span>
+                                            </span><!-- /.username -->
+                                            <?= $value['content'] ?></br>
+                                        <?php } ?>
                                     </div>
-                                    <!-- /.card-footer -->
-                            <?php   }
-                            } ?>
+                                    <!-- /.comment-text -->
+                                </div>
+                                <!-- /.card-comment -->
+                            </div><br>
+                            <!-- /.card-footer -->
                             <div class="card-footer">
                                 <form action="" method="post">
                                     <div class="img-push">
