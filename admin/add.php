@@ -11,23 +11,35 @@ if ($_SESSION['role'] != 1) {
 };
 
 if ($_POST) {
-    $file = 'images/' . ($_FILES['image']['name']);
-    $imageType = pathinfo($file, PATHINFO_EXTENSION);
-
-    if ($imageType != 'png' && $imageType != 'jpg' && $imageType != 'jpeg') {
-        echo "<script>alert('Image must be png or jpg or jpeg.')</script>";
+    if (empty($_POST['title']) || empty($_POST['content']) || empty($_FILES['image'])) {
+        if (empty($_POST['title'])) {
+            $titleError = 'Title cannot be null';
+        }
+        if (empty($_POST['content'])) {
+            $contentError = 'Content cannot be null';
+        }
+        if (empty($_FILES['image'])) {
+            $imageError = 'Image cannot be null';
+        }
     } else {
-        $title = $_POST['title'];
-        $content = $_POST['content'];
-        $image = $_FILES['image']['name'];
-        move_uploaded_file($_FILES['image']['tmp_name'], $file);
+        $file = 'images/' . ($_FILES['image']['name']);
+        $imageType = pathinfo($file, PATHINFO_EXTENSION);
 
-        $stmt = $pdo->prepare("INSERT INTO posts(title, content, image, author_id) VALUES (:title, :content, :image, :author_id)");
-        $result = $stmt->execute(
-            array(':title' => $title, ':content' => $content, ':image' => $image, 'author_id' => $_SESSION['user_id'])
-        );
-        if ($result) {
-            echo "<script>alert('Successfully added.');window.location.href='index.php';</script>";
+        if ($imageType != 'png' && $imageType != 'jpg' && $imageType != 'jpeg') {
+            echo "<script>alert('Image must be png or jpg or jpeg.')</script>";
+        } else {
+            $title = $_POST['title'];
+            $content = $_POST['content'];
+            $image = $_FILES['image']['name'];
+            move_uploaded_file($_FILES['image']['tmp_name'], $file);
+
+            $stmt = $pdo->prepare("INSERT INTO posts(title, content, image, author_id) VALUES (:title, :content, :image, :author_id)");
+            $result = $stmt->execute(
+                array(':title' => $title, ':content' => $content, ':image' => $image, 'author_id' => $_SESSION['user_id'])
+            );
+            if ($result) {
+                echo "<script>alert('Successfully added.');window.location.href='index.php';</script>";
+            }
         }
     }
 }
@@ -46,15 +58,18 @@ if ($_POST) {
                         <form action="add.php" method="post" enctype="multipart/form-data">
                             <div class="form-group">
                                 <label for="">Title</label>
-                                <input type="text" class="form-control" name="title" value="" required>
+                                <p style="color: red;"><?php echo empty($titleError) ? '' : '*' . $titleError; ?></p>
+                                <input type="text" class="form-control" name="title" value="">
                             </div>
                             <div class="form-group">
-                                <label for="">Content</label></br>
-                                <textarea class="form-control" name="content" cols="80" rows="8" required></textarea>
+                                <label for="">Content</label>
+                                <p style="color: red;"><?php echo empty($contentError) ? '' : '*' . $contentError; ?></p>
+                                <textarea class="form-control" name="content" cols="80" rows="8"></textarea>
                             </div>
                             <div class="form-group">
-                                <label for="">Image</label></br>
-                                <input type="file" name="image" value="" required>
+                                <label for="">Image</label>
+                                <p style="color: red;"><?php echo empty($imageError) ? '' : '*' . $imageError; ?></p>
+                                <input type="file" name="image" value="">
                             </div>
                             <div class="form-group">
                                 <input type="submit" class="btn btn-success mr-4" value="Submit">

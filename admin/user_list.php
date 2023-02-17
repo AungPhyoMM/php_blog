@@ -11,7 +11,7 @@ if ($_SESSION['role'] != 1) {
 };
 
 
-if (isset($_POST['search'])) {
+if (!empty($_POST['search'])) {
     setcookie('search', $_POST['search'], time() + (86400 * 30), "/");
 } else {
     if (empty($_GET['pageno'])) {
@@ -41,7 +41,7 @@ if (isset($_POST['search'])) {
                         $pageno = 1;
                     };
 
-                    $numOfrecs = 2;
+                    $numOfrecs = 5;
 
                     $offset = ($pageno - 1) * $numOfrecs;
 
@@ -55,7 +55,7 @@ if (isset($_POST['search'])) {
                         $stmt->execute();
                         $result = $stmt->fetchAll();
                     } else {
-                        $searchKey = $_POST['search'] ? $_POST['search'] : $_COOKIE['search'];
+                        $searchKey = !empty($_POST['search']) ? $_POST['search'] : $_COOKIE['search'];
                         $stmt = $pdo->prepare("SELECT * FROM users WHERE name LIKE '%$searchKey%' ORDER BY id DESC");
                         $stmt->execute();
                         $rawResult = $stmt->fetchAll();

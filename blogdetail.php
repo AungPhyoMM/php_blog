@@ -6,10 +6,6 @@ if (empty($_SESSION['user_id']) || empty($_SESSION['logged_in'])) {
     header('Location: login.php');
 };
 
-if ($_SESSION['role'] != 1) {
-    header('Location: login.php');
-};
-
 $stmt = $pdo->prepare("SELECT * FROM posts WHERE id=" . $_GET['id']);
 $stmt->execute();
 $result = $stmt->fetchAll();
@@ -32,13 +28,17 @@ if ($cmResult) {
 }
 
 if ($_POST) {
-    $comment = $_POST['comment'];
-    $stmt = $pdo->prepare("INSERT INTO comments(content, author_id, post_id) VALUES (:content, :author_id, :post_id)");
-    $result = $stmt->execute(
-        array(':content' => $comment, ':author_id' => $_SESSION['user_id'], ':post_id' => $blogId,)
-    );
-    if ($result) {
-        header("Location: blogdetail.php?id=" . $blogId);
+    if (empty($_POST['comment'])) {
+        $commentError = 'Comment cannot be null';
+    } else {
+        $comment = $_POST['comment'];
+        $stmt = $pdo->prepare("INSERT INTO comments(content, author_id, post_id) VALUES (:content, :author_id, :post_id)");
+        $result = $stmt->execute(
+            array(':content' => $comment, ':author_id' => $_SESSION['user_id'], ':post_id' => $blogId,)
+        );
+        if ($result) {
+            header("Location: blogdetail.php?id=" . $blogId);
+        }
     }
 };
 ?>
@@ -90,25 +90,26 @@ if ($_POST) {
 
                             </div>
                             <!-- /.card-body -->
-                            <div class="card-footer card-comments">
-                                <div class="card-comment">
-                                    <div class="comment-text" style="margin-left: 0px !important">
+                            <div class="card-footer card-comments ">
+                                <div class="card-comment ">
+                                    <div class="comment-text mb-3" style="margin-left: 0px !important">
                                         <?php foreach ($cmResult as $key => $value) { ?>
                                             <span class="username">
                                                 <?= $auResult[$key][0]['name'] ?>
                                                 <span class="text-muted float-right"><?= $value['created_at'] ?></span>
                                             </span><!-- /.username -->
-                                            <?= $value['content'] ?></br>
+                                            <?= $value['content'] ?>
                                         <?php } ?>
                                     </div>
                                     <!-- /.comment-text -->
                                 </div>
                                 <!-- /.card-comment -->
-                            </div><br>
+                            </div>
                             <!-- /.card-footer -->
                             <div class="card-footer">
                                 <form action="" method="post">
                                     <div class="img-push">
+                                        <p style="color: red;"><?php echo empty($commentError) ? '' : '*' . $commentError; ?></p>
                                         <input type="text" name="comment" class="form-control form-control-sm" placeholder="Press enter to post comment">
                                     </div>
                                 </form>
