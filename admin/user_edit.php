@@ -1,6 +1,7 @@
 <?php
 session_start();
 require '../config/config.php';
+require '../config/common.php';
 
 if (empty($_SESSION['user_id']) || empty($_SESSION['logged_in'])) {
     header('Location: login.php');
@@ -67,6 +68,7 @@ $result = $stmt->fetchAll();
                 <div class="card">
                     <div class="card-body">
                         <form action="" method="post" enctype="multipart/form-data">
+                            <input type="hidden" name="_token" value="<?php echo $_SESSION['_token']; ?>">
                             <div class="form-group">
                                 <input type="hidden" name="id" value="<?= $result[0]['id'] ?>">
                                 <label for="">Name</label>
