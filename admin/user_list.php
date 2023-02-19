@@ -1,6 +1,7 @@
 <?php
 session_start();
 require '../config/config.php';
+require '../config/common.php';
 
 if (empty($_SESSION['user_id']) || empty($_SESSION['logged_in'])) {
     header('Location: login.php');
@@ -85,8 +86,8 @@ if (!empty($_POST['search'])) {
                                     foreach ($result as $value) { ?>
                                         <tr>
                                             <td><?= $i ?></td>
-                                            <td><?= $value['name'] ?></td>
-                                            <td><?= $value['email'] ?></td>
+                                            <td><?= escape($value['name']) ?></td>
+                                            <td><?= escape($value['email']) ?></td>
                                             <td><?php if ($value['role'] == 1) {
                                                     echo "Admin";
                                                 } else {

@@ -73,12 +73,12 @@ $result = $stmt->fetchAll();
                                 <input type="hidden" name="id" value="<?= $result[0]['id'] ?>">
                                 <label for="">Name</label>
                                 <p style="color: red;"><?php echo empty($nameError) ? '' : '*' . $nameError; ?></p>
-                                <input type="text" class="form-control" name="name" value="<?= $result[0]['name'] ?>">
+                                <input type="text" class="form-control" name="name" value="<?= escape($result[0]['name']) ?>">
                             </div>
                             <div class="form-group">
                                 <label for="">Email</label>
                                 <p style="color: red;"><?php echo empty($emailError) ? '' : '*' . $emailError; ?></p>
-                                <input type="email" class="form-control" name="email" value="<?= $result[0]['email'] ?>">
+                                <input type="email" class="form-control" name="email" value="<?= escape($result[0]['email']) ?>">
                             </div>
                             <div class="form-group">
                                 <label for="">Password</label>

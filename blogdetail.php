@@ -75,7 +75,7 @@ if ($_POST) {
                         <div class="card card-widget">
                             <div class="card-header">
                                 <div style="text-align:center !important; float: none;" class="card-title">
-                                    <h3><?= $result[0]['title'] ?></h3>
+                                    <h3><?= escape($result[0]['title']) ?></h3>
                                 </div>
                             </div>
                             <!-- /.card-header -->
@@ -84,7 +84,7 @@ if ($_POST) {
                                     <img class="img-fluid pad" src=" admin/images/<?= $result[0]['image'] ?>" alt="Photo">
                                 </div>
                                 <br><br>
-                                <p><b><?= $result[0]['content'] ?></b></p>
+                                <p><b><?= escape($result[0]['content']) ?></b></p>
                                 <h4>Comments</h4>
                                 <hr>
                                 <a href="index.php" type="button" class="btn btn-default">Back</a>
@@ -96,10 +96,10 @@ if ($_POST) {
                                     <div class="comment-text mb-3" style="margin-left: 0px !important">
                                         <?php foreach ($cmResult as $key => $value) { ?>
                                             <span class="username">
-                                                <?= $auResult[$key][0]['name'] ?>
-                                                <span class="text-muted float-right"><?= $value['created_at'] ?></span>
+                                                <?= escape($auResult[$key][0]['name']) ?>
+                                                <span class="text-muted float-right"><?= escape($value['created_at']) ?></span>
                                             </span><!-- /.username -->
-                                            <?= $value['content'] ?>
+                                            <?= escape($value['content']) ?>
                                         <?php } ?>
                                     </div>
                                     <!-- /.comment-text -->
